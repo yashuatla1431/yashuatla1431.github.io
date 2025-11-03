@@ -17,6 +17,4 @@ I completed Andrej Karpathy’s “Let’s Build GPT from Scratch” and began r
 - Document the math behind attention.
 - Commit daily to my [`research-transformers`](https://github.com/yashuatla1431/research-transformers) repo.
 
----
 
-This marks Day 1 of the journey.
