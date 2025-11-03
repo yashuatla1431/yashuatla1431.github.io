@@ -1,11 +1,22 @@
 ---
 layout: post
-title: "Rebuilding GPT from Scratch — Week 1 Reflection"
+title: "Rebuilding GPT from Scratch — Kickoff"
 ---
 
-Today I reproduced the full GPT architecture from memory...
+Today marks the start of my 8-month AI Research Journey.
 
-### Key Concepts
-- Multi-Head Attention
-- LayerNorm
-- Residual Connections
+I completed Andrej Karpathy’s “Let’s Build GPT from Scratch” and began reproducing the model from memory.
+
+### 🧩 Key Takeaways
+- The GPT architecture is fundamentally a stack of attention + feedforward blocks.
+- Each component (Head, MHA, Block) can be modularized for flexibility.
+- The real power lies in understanding the tensor shapes and QKV projections.
+
+### 🚀 Next Steps
+- Implement tokenization and training loop.
+- Document the math behind attention.
+- Commit daily to my [`research-transformers`](https://github.com/yashuatla1431/research-transformers) repo.
+
+---
+
+This marks Day 1 of the journey.
