@@ -1,27 +1,16 @@
-title: "AI Research Journey"
+title: "Yashwanth Atla"
 description: "Learning Transformers and RLHF from scratch"
 author: "Yashwanth Atla"
-email: "yashuatla1431@gmail.com"
+email: "yashwanthatla1431@gmail.com"
 github_username: yashuatla1431
 theme: minima
 
-# Minima settings
-minima:
-  skin: classic
-  social_links:
-    github: yashuatla1431
-
-# Show excerpts on homepage
 show_excerpts: true
-
-# Permalink structure
 permalink: /:year/:month/:day/:title/
 
-# Build settings
 markdown: kramdown
 highlighter: rouge
 
-# Plugins
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
