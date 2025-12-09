@@ -1,3 +1,11 @@
+---
+layout: post
+title: "Understanding Language Models: A Beginner's Guide"
+date: 2025-11-05
+categories: [fundamentals, language-models]
+excerpt: "Learn what language models are, how training works, and what's inside the black box through intuitive analogies and clear explanations."
+---
+
 # Understanding Language Models: A Beginner's Guide
 
 ## What is a Language Model?

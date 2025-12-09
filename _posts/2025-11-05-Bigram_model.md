@@ -1,3 +1,11 @@
+---
+layout: post
+title: "Understanding the Bigram Model: Your First Step Toward Transformers"
+date: 2025-11-05
+categories: [fundamentals, language-models, hands-on]
+excerpt: "Build your first language model from scratch, understand its limitations, and discover why we need transformers through practical implementation."
+---
+
 # Understanding the Bigram Model: Your First Step Toward Transformers
 
 ## What is a Bigram Model?

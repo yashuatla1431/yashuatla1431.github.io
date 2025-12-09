@@ -1,6 +1,9 @@
 ---
 layout: post
 title: "Rebuilding GPT from Scratch — Kickoff"
+date: 2025-11-03
+categories: [transformers, gpt, project-log]
+excerpt: "Day 1 of my 8-month AI Research Journey: reproducing GPT architecture from memory and understanding attention mechanisms."
 ---
 
 Today marks the start of my 8-month AI Research Journey.
