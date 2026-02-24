@@ -1,6 +1,7 @@
 title: "Yashwanth Atla"
 description: "Learning Transformers and RLHF from scratch"
-author: "Yashwanth Atla"
+author:
+  name: "Yashwanth Atla"
 email: "yashwanthatla1431@gmail.com"
 github_username: yashuatla1431
 theme: minima
