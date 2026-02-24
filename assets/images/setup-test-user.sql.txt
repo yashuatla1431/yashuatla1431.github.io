@@ -1,0 +1,168 @@
+-- Setup Test User with Complete Organization Structure
+-- This script creates a complete test setup for local development
+
+-- 1. Create a test organization
+INSERT INTO public.organizations (
+  id,
+  name,
+  created_at,
+  updated_at
+) VALUES (
+  gen_random_uuid(),
+  'Test Medical Clinic',
+  NOW(),
+  NOW()
+) ON CONFLICT (id) DO NOTHING
+RETURNING id;
+
+-- Store the organization ID (you'll need to use this in the next step)
+-- Get the organization ID
+DO $$
+DECLARE
+  test_org_id uuid;
+  test_user_id uuid;
+  test_clinician_id uuid;
+BEGIN
+  -- Get or create organization
+  SELECT id INTO test_org_id FROM public.organizations WHERE name = 'Test Medical Clinic' LIMIT 1;
+  
+  IF test_org_id IS NULL THEN
+    INSERT INTO public.organizations (name, created_at, updated_at)
+    VALUES ('Test Medical Clinic', NOW(), NOW())
+    RETURNING id INTO test_org_id;
+  END IF;
+
+  RAISE NOTICE 'Organization ID: %', test_org_id;
+
+  -- Get existing user or create one
+  SELECT id INTO test_user_id FROM auth.users LIMIT 1;
+  
+  IF test_user_id IS NULL THEN
+    -- Create a test user if none exists
+    INSERT INTO auth.users (
+      instance_id,
+      id,
+      aud,
+      role,
+      email,
+      encrypted_password,
+      email_confirmed_at,
+      created_at,
+      updated_at,
+      raw_app_meta_data,
+      raw_user_meta_data,
+      is_super_admin,
+      confirmation_token,
+      email_change_token_new,
+      recovery_token
+    ) VALUES (
+      '00000000-0000-0000-0000-000000000000',
+      gen_random_uuid(),
+      'authenticated',
+      'authenticated',
+      'doctor@test.com',
+      crypt('password123', gen_salt('bf')),
+      NOW(),
+      NOW(),
+      NOW(),
+      '{"provider": "email", "providers": ["email"]}'::jsonb,
+      '{"first_name": "Dr. John", "last_name": "Doe"}'::jsonb,
+      false,
+      '',
+      '',
+      ''
+    )
+    RETURNING id INTO test_user_id;
+  END IF;
+
+  RAISE NOTICE 'User ID: %', test_user_id;
+
+  -- Create clinician record
+  INSERT INTO public.clinicians (
+    id,
+    user_id,
+    organization_id,
+    is_active,
+    created_at,
+    updated_at
+  ) VALUES (
+    gen_random_uuid(),
+    test_user_id,
+    test_org_id,
+    true,
+    NOW(),
+    NOW()
+  ) ON CONFLICT (user_id) DO NOTHING
+  RETURNING id INTO test_clinician_id;
+
+  -- Get clinician_id if already exists
+  IF test_clinician_id IS NULL THEN
+    SELECT id INTO test_clinician_id FROM public.clinicians WHERE user_id = test_user_id LIMIT 1;
+  END IF;
+
+  RAISE NOTICE 'Clinician ID: %', test_clinician_id;
+
+  -- Create organization member (this will trigger the custom claims update!)
+  INSERT INTO public.organization_members (
+    id,
+    user_id,
+    organization_id,
+    member_type,
+    clinician_id,
+    member_first_name,
+    member_last_name,
+    member_email,
+    is_active,
+    created_at,
+    updated_at
+  ) VALUES (
+    gen_random_uuid(),
+    test_user_id,
+    test_org_id,
+    'admin',
+    test_clinician_id,
+    'Dr. John',
+    'Doe',
+    'doctor@test.com',
+    true,
+    NOW(),
+    NOW()
+  ) ON CONFLICT (user_id, organization_id) DO UPDATE
+  SET 
+    member_type = 'admin',
+    clinician_id = EXCLUDED.clinician_id,
+    updated_at = NOW();
+
+  RAISE NOTICE 'Organization member created - custom claims should be added automatically';
+
+  -- Verify the custom claims were added
+  RAISE NOTICE 'Checking custom claims...';
+  
+  PERFORM * FROM auth.users 
+  WHERE id = test_user_id 
+  AND raw_app_meta_data ? 'user_id' 
+  AND raw_app_meta_data ? 'role_name' 
+  AND raw_app_meta_data ? 'organization_id';
+
+  RAISE NOTICE 'Setup complete!';
+  RAISE NOTICE 'Email: doctor@test.com';
+  RAISE NOTICE 'Password: password123';
+  RAISE NOTICE 'Organization: Test Medical Clinic';
+
+END $$;
+
+-- Verify the setup
+SELECT 
+  u.id as user_id,
+  u.email,
+  u.raw_app_meta_data->>'user_id' as claim_user_id,
+  u.raw_app_meta_data->>'role_name' as claim_role,
+  u.raw_app_meta_data->>'organization_id' as claim_org_id,
+  om.member_type,
+  om.organization_id,
+  o.name as organization_name
+FROM auth.users u
+LEFT JOIN public.organization_members om ON u.id = om.user_id
+LEFT JOIN public.organizations o ON om.organization_id = o.id
+WHERE u.email = 'doctor@test.com';
+
