@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Tokenization: Teaching Computers to Read (Sort Of)"
-date: 2026-02-26
+date: 2026-02-23
 categories: [fundamentals, nlp, hands-on]
 excerpt: "Building a BPE tokenizer from scratch. Turns out, computers don't actually understand words - they just pretend really well."
 ---
