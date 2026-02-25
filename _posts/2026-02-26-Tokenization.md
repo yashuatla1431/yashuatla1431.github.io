@@ -252,6 +252,99 @@ Look at that! We compressed 52 tokens down to 47 by merging common patterns. And
 
 The compression isn't huge because we only trained on a small text with 30 merges. In real tokenizers (like GPT's), they train on massive datasets with vocabularies of 50,000+ tokens, which gets way better compression.
 
+## Wait, What Does "Training" a BPE Tokenizer Actually Mean?
+
+Okay, let's clear this up because it's confusing at first.
+
+When we say "training" a BPE tokenizer, we're NOT training a neural network. There's no gradient descent, no loss function, no backpropagation. It's much simpler than that.
+
+**Training a BPE tokenizer means:**
+1. You give it a bunch of raw text (your dataset)
+2. It analyzes which byte pairs appear most frequently
+3. It learns a set of merge rules based on those frequencies
+4. You save those merge rules (the `merged_tokens` dictionary)
+
+That's it. The "training" is just statistical analysis of your text.
+
+**Your dataset is literally just raw text.** Could be anything:
+- A text file with 1 million Wikipedia articles
+- Every post on Reddit from the last year
+- All the Python code on GitHub
+- In our example above, it was just that one Unicode-heavy string
+
+The bigger and more diverse your training text, the better your tokenizer will handle different kinds of input.
+
+### How to Actually Use a Trained BPE Tokenizer
+
+Once you've trained your tokenizer (learned the merge rules), here's how you use it:
+
+**Step 1: Save the merge rules**
+```python
+# After training
+tokens, merged_tokens = train(text, vocab_size, exp_vocab_size)
+
+# Save it (you'd normally pickle this or save as JSON)
+import pickle
+with open('my_tokenizer.pkl', 'wb') as f:
+    pickle.dump(merged_tokens, f)
+```
+
+**Step 2: Load and use it later**
+```python
+# Load your trained tokenizer
+with open('my_tokenizer.pkl', 'rb') as f:
+    merged_tokens = pickle.load(f)
+
+# Now encode ANY text
+new_text = "This is completely new text the tokenizer has never seen"
+encoded = encode(new_text, merged_tokens)
+print(f"Tokenized into {len(encoded)} tokens")
+
+# And decode it back
+decoded = decode(encoded, merged_tokens)
+print(decoded)  # Gets back the original text
+```
+
+The key insight: you train once on a big corpus, save the merge rules, then reuse those rules forever. Just like how GPT's tokenizer was trained once on a massive dataset, and now it tokenizes all your prompts using those same learned rules.
+
+### Connecting to GPT's Tokenizer
+
+GPT uses the exact same BPE algorithm we just built! The only differences are:
+
+**1. Scale:** GPT's tokenizer was trained on hundreds of gigabytes of text from the internet. We trained on a single paragraph. That's why GPT's tokenizer has 50,257 tokens in its vocabulary (vs our 256 + 30).
+
+**2. Pre-processing:** Before applying BPE, GPT adds some regex patterns to handle things like:
+   - Keeping contractions together ("don't" stays as one unit before BPE)
+   - Handling whitespace consistently
+   - Separating punctuation in specific ways
+
+**3. Special tokens:** GPT adds special tokens like `<|endoftext|>` to mark boundaries between documents during training.
+
+But the core merge algorithm? Identical to what we built.
+
+Want to see GPT's actual tokenizer in action? You can use it:
+
+```python
+# Install: pip install tiktoken
+import tiktoken
+
+# Load GPT's tokenizer
+enc = tiktoken.get_encoding("cl100k_base")  # Used by GPT-4
+
+# Encode text
+text = "Hello, world!"
+tokens = enc.encode(text)
+print(tokens)  # [9906, 11, 1917, 0]
+
+# Decode back
+decoded = enc.decode(tokens)
+print(decoded)  # "Hello, world!"
+```
+
+See? Same encode/decode pattern. GPT's tokenizer is just our mini BPE on steroids - trained on way more data with some extra preprocessing rules.
+
+If you want to train a GPT-quality tokenizer yourself, check out OpenAI's [tiktoken](https://github.com/openai/tiktoken) library. It's the production version of what we just built, optimized for speed with all the bells and whistles.
+
 ## Putting It All Together: The BPETokenizer Class
 
 Now let's wrap everything into a clean class so we can reuse it easily:
