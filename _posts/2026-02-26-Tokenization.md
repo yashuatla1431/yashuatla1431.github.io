@@ -498,3 +498,5 @@ Now go forth and tokenize all the things. Or don't. I'm not your boss.
 ---
 
 **P.S.** If you're wondering why your language model sometimes acts weird with punctuation or spacing, now you know - blame the tokenizer.
+
+**P.P.S.** Want to see the full code and experiment with it yourself? Check out my GitHub repository with the complete implementation: [yashuatla1431/tiktoken](https://github.com/yashuatla1431/tiktoken). Feel free to clone it, break it, improve it, or just mess around with different training texts!
