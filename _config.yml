@@ -3,10 +3,17 @@ description: "Learning Transformers and RLHF from scratch"
 author: "Yashwanth Atla"
 email: "yashwanthatla1431@gmail.com"
 github_username: yashuatla1431
+linkedin_username: yashwanth-atla
 theme: minima
 
 show_excerpts: true
 permalink: /:year/:month/:day/:title/
+
+# Comment system - Giscus (Free, uses GitHub Discussions)
+# Enabled! Just need to set category name and ID after enabling Discussions
+
+# Math rendering support
+mathjax: true
 
 markdown: kramdown
 highlighter: rouge

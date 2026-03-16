@@ -6,11 +6,38 @@ layout: default
 
   <header class="post-header">
     <h1 class="post-title">{{ page.title | escape }}</h1>
-    <p class="post-meta">{{ page.date | date: "%B %d, %Y" }}</p>
+    <p class="post-meta">
+      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %d, %Y" }}</time>
+      {% if page.author %} • <span>{{ page.author }}</span>{% endif %}
+    </p>
   </header>
 
   <div class="post-content">
     {{ content }}
   </div>
 
+  {% if page.tags %}
+  <div class="post-tags">
+    <h3>Tags</h3>
+    <div class="tags-list">
+      {% for tag in page.tags %}
+        <span class="tag">{{ tag }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% include social-share.html %}
+
+  {% include post_nav.html %}
+
+  {% include comments.html %}
+
+  {% include social-links.html %}
+
 </article>
+
+{% if site.mathjax %}
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+{% endif %}
